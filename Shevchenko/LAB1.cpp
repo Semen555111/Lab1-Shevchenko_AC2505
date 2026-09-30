@@ -25,11 +25,8 @@ struct KS {
 // printf '\033[3J' дополнительно стирает историю прокрутки,
 // чтобы при прокрутке вверх не было видно старого текста
 void clear_screen() {
-#ifdef _WIN32
-	system("cls");
-#else
+
 	system("clear && printf '\\033[3J'");
-#endif
 }
 
 void create_pipe(PIPE& p) {
@@ -224,7 +221,7 @@ int main()
     KS s = KS();       // все поля обнулены: 0 цехов = КС ещё не создана
     int d;
 
-    clear_screen();    // чистый экран при запуске программы
+    clear_screen();   
 
     do {
         cout << "1. Create pipe" << endl;
@@ -241,7 +238,7 @@ int main()
 
         cout << "Choose an option: ";
         cin >> d;
-        if (cin.fail()) {          // введена буква: не выходим, а сообщаем об ошибке
+        if (cin.fail()) {          
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             d = -1;
