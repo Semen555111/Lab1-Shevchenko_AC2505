@@ -5,7 +5,6 @@
 #include <cstdlib>  // system
 using namespace std;
 
-const char* FILE_NAME = "data.txt";   
 
 struct PIPE {
 	string name;
@@ -254,7 +253,7 @@ int main()
         PIPE filePipe = PIPE();
         KS fileKs = KS();
         if (d >= 7 && d <= 10) {
-            ifstream fin(FILE_NAME);
+            ifstream fin("data.txt");
             string mark;
             while (getline(fin, mark)) {       // читаем метки PIPE / KS
                 if (mark == "PIPE")
@@ -321,16 +320,16 @@ int main()
                 cout << "Pipe is not created yet" << endl;
                 break;
             }
-            ofstream fout(FILE_NAME);
+            ofstream fout("data.txt");
             if (!fout) {
-                cout << "Error opening " << FILE_NAME << " for writing" << endl;
+                cout << "Error opening " << "data.txt" << " for writing" << endl;
                 break;
             }
             save_pipe(fout, p);
             if (fileKs.works > 0)
                 save_ks(fout, fileKs);
             fout.close();
-            cout << "Pipe was saved to " << FILE_NAME << endl;
+            cout << "Pipe was saved to " << "data.txt" << endl;
             break;
         }
 
@@ -340,23 +339,23 @@ int main()
                 cout << "KS is not created yet" << endl;
                 break;
             }
-            ofstream fout(FILE_NAME);
+            ofstream fout("data.txt");
             if (!fout) {
-                cout << "Error opening " << FILE_NAME << " for writing" << endl;
+                cout << "Error opening " << "data.txt" << " for writing" << endl;
                 break;
             }
             if (filePipe.length > 0)
                 save_pipe(fout, filePipe);
             save_ks(fout, s);
             fout.close();
-            cout << "KS was saved to " << FILE_NAME << endl;
+            cout << "KS was saved to " << "data.txt" << endl;
             break;
         }
 
         case 9: {   // загрузить трубу
             clear_screen();
             if (filePipe.length <= 0) {
-                cout << "No correct pipe data in " << FILE_NAME << endl;
+                cout << "No correct pipe data in " << "data.txt" << endl;
             }
             else {
                 p = filePipe;
@@ -368,7 +367,7 @@ int main()
         case 10: {  // загрузить КС
             clear_screen();
             if (fileKs.works <= 0) {
-                cout << "No correct KS data in " << FILE_NAME << endl;
+                cout << "No correct KS data in " << "data.txt" << endl;
             }
             else {
                 s = fileKs;
