@@ -26,12 +26,12 @@ void clear_screen() {
 
 void create_pipe(PIPE& p) {
 	cout << "Name -> ";
-	cin.ignore();
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	getline(cin, p.name);
 
 	cout << "Length -> ";
 	cin >> p.length;
-	while (cin.fail() || p.length <= 0) {
+	while (cin.fail() || p.length <= 0 || cin.peek() != '\n') {
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(),'\n');
 		cout << "Error, length must be a positive number -> ";
@@ -40,7 +40,7 @@ void create_pipe(PIPE& p) {
 
 	cout << "Diameter -> ";
 	cin >> p.diameter;
-	while (cin.fail() || p.diameter <= 0) {
+	while (cin.fail() || p.diameter <= 0 || cin.peek() != '\n') {
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(),'\n');
 		cout << "Error, diameter must be a positive number -> ";
@@ -98,7 +98,7 @@ void create_ks(KS& s) {
 	cout << "Works -> ";
 	cin >> s.works;
 
-	while (cin.fail() || s.works <= 0) {
+	while (cin.fail() || s.works <= 0 || cin.peek() != '\n') {
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		cout << "Error, works must be a positive integer -> ";
@@ -108,7 +108,7 @@ void create_ks(KS& s) {
 	cout << "Active Works -> ";
 	cin >> s.worksA;
 
-	while (cin.fail() || s.worksA < 0 || s.worksA > s.works) {
+	while (cin.fail() || s.worksA < 0 || s.worksA > s.works || cin.peek() != '\n') {
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
@@ -121,7 +121,7 @@ void create_ks(KS& s) {
 	cout << "Efficiency -> ";
 	cin >> s.efficiency;
 
-	while (cin.fail() || s.efficiency < 0 || s.efficiency > 100) {
+	while (cin.fail() || s.efficiency < 0 || s.efficiency > 100 || cin.peek() != '\n') {
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
@@ -226,34 +226,31 @@ void load_ks(ifstream& fin, KS& s) {
 
 int main()
 {
-    PIPE p = PIPE();
+    clear_screen();
+	PIPE p = PIPE();
     KS s = KS();
     int d;
 
-    clear_screen();
+do {
+    cout << "1. Create pipe" << endl;
+    cout << "2. Edit pipe" << endl;
+    cout << "3. Create KS" << endl;
+    cout << "4. Edit KS" << endl;
+    cout << "5. Show all" << endl;
+    cout << "6. Save to file" << endl;
+    cout << "7. Load from file" << endl;
+    cout << "0. Exit" << endl;
 
-    do {
-        cout << "1. Create pipe" << endl;
-        cout << "2. Edit pipe" << endl;
-        cout << "3. Create KS" << endl;
-        cout << "4. Edit KS" << endl;
-        cout << "5. Show all" << endl;
-        cout << "6. Save to file" << endl;
-        cout << "7. Load from file" << endl;
-        cout << "0. Exit" << endl;
+    cout << "Choose an option: ";
+	cin >> d;
 
-        cout << "Choose an option: ";
-        cin >> d;
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            d=-1;
-            cout << "Error, choose the right option" << endl;
-            cout << "\nPress Enter to continue...";
-            cin.get();
-            clear_screen();
-            continue;
-        }
+	while (cin.fail() || d < 0 || d > 7) {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Error, choose a number from 0 to 7 -> ";
+    cin >> d;
+}
 
         switch (d) {
 
