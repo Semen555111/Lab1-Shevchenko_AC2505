@@ -320,7 +320,8 @@ do {
             string mark;
             getline(fin, mark);
             if (mark != "PIPE" && mark != "KS")
-                cout << "No pipe or KS data in data.txt" << endl;
+                cout << "No mark PIPE or KS in data.txt" << endl;
+				break;
             if (mark == "PIPE") {
                 load_pipe(fin, p);
                 getline(fin, mark);
