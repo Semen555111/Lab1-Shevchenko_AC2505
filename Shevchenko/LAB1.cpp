@@ -19,10 +19,7 @@ struct KS {
 };
 
 
-void clear_screen() {
 
-	system("clear && printf '\\033[3J'");
-}
 
 void create_pipe(PIPE& p) {
 	cout << "Name -> ";
@@ -226,7 +223,6 @@ void load_ks(ifstream& fin, KS& s) {
 
 int main()
 {
-    clear_screen();
 	PIPE p = PIPE();
     KS s = KS();
     int d;
@@ -255,14 +251,12 @@ do {
         switch (d) {
 
         case 1: {
-            clear_screen();
             create_pipe(p);
             break;
 
         }
 
         case 2: {
-            clear_screen();
             if (p.length <= 0)
                 cout << "Pipe is not created yet" << endl;
             else
@@ -271,13 +265,11 @@ do {
         }
 
         case 3: {
-            clear_screen();
             create_ks(s);
             break;
         }
 
         case 4: {
-            clear_screen();
             if (s.works <= 0)
                 cout << "KS is not created yet" << endl;
             else
@@ -286,14 +278,13 @@ do {
         }
 
         case 5: {
-            clear_screen();
             show_pipe(p);
             show_ks(s);
             break;
         }
 
         case 6: {
-            clear_screen();
+
             if (p.length <= 0 && s.works <= 0) {
                 cout << "Nothing to save, create a pipe or KS" << endl;
                 break;
@@ -311,7 +302,7 @@ do {
         }
 
         case 7: {
-            clear_screen();
+
             ifstream fin("data.txt");
             if (!fin) {
                 cout << "Error opening data.txt for reading" << endl;
@@ -348,7 +339,7 @@ do {
             cout << "\nPress Enter to continue...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
-            clear_screen();
+
         }
 
     } while (d != 0);
