@@ -2,8 +2,9 @@
 #include <string>
 #include <fstream>
 #include <limits>
-#include <cstdlib>
+
 using namespace std;
+
 struct PIPE {
 	string name;
 	double length;
@@ -15,11 +16,7 @@ struct KS {
 	int works;
 	int worksA;
 	double efficiency;
-
 };
-
-
-
 
 void create_pipe(PIPE& p) {
 	cout << "Name -> ";
@@ -240,13 +237,14 @@ do {
     cout << "Choose an option: ";
 	cin >> d;
 
-	while (cin.fail() || d < 0 || d > 7) {
+	while (cin.fail() || d < 0 || d > 7) 
+	{
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     cout << "Error, choose a number from 0 to 7 -> ";
     cin >> d;
-}
+	}
 
         switch (d) {
 
