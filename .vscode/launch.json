@@ -1,20 +1,49 @@
 {
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "LAB1: Windows (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/Shevchenko/LAB1.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/Shevchenko",
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe",
+      "environment": [
         {
-            "name": "C/C++: clang++ сборка и отладка активного файла",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [
-    { "name": "TERM", "value": "xterm-256color" }
-],
-            "externalConsole": false,
-            "MIMode": "lldb",
-            "preLaunchTask": "C/C++: clang++ сборка активного файла"
+          "name": "PATH",
+          "value": "C:\\msys64\\ucrt64\\bin;${env:PATH}"
         }
-    ],
-    "version": "2.0.0"
+      ],
+      "preLaunchTask": "Build LAB1 (Windows)",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/semsh/OneDrive/Desktop/Lab1-Shevchenko_AC2505/Shevchenko",
+      "program": "c:/Users/semsh/OneDrive/Desktop/Lab1-Shevchenko_AC2505/Shevchenko/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
 }
