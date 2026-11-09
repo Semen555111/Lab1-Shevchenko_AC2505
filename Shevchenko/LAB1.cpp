@@ -3,6 +3,7 @@
 #include <fstream>
 #include <limits>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -34,7 +35,15 @@ int read_int(int low, int high)
 		cout << "Error, enter an integer from " << low << " to " << high << " -> ";
 		cin >> x;
 	}
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	return x;
+}
+
+string read_line()
+{
+	string text;
+	getline(cin >> ws, text);
+	return text;
 }
 
 double read_double(double low, double high)
@@ -47,14 +56,14 @@ double read_double(double low, double high)
 		cout << "Error, enter a number from " << low << " to " << high << " -> ";
 		cin >> x;
 	}
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	return x;
 }
 
 void create_pipe(PIPE& p) {
 	p.id = next_pipe_id++;
 	cout << "Name -> ";
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-	getline(cin, p.name);
+	p.name = read_line();
 
 	cout << "Length -> ";
 	p.length = read_double(0.001, 100000);
@@ -83,8 +92,7 @@ void edit_pipe(PIPE& p) {
 void create_ks(KS& s) {
 	s.id = next_ks_id++;
 	cout << "Name -> ";
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-	getline(cin, s.name);
+	s.name = read_line();
 
 	cout << "Works -> ";
 	s.works = read_int(1, 1000);
@@ -111,7 +119,6 @@ void edit_ks(KS& s) {
 	}
 }
 
-
 void show_pipe(const PIPE& p) {
 	cout << "PIPE" << "\n";
 	if (p.length <= 0)
@@ -136,7 +143,6 @@ void show_ks(const KS&s){
 		cout << "Efficiency -> " << s.efficiency << "\n";
 	}
 }
-
 
 void save_pipe(ofstream& fout, const PIPE& p) {
 	if (p.length > 0)
@@ -175,10 +181,144 @@ void load_ks(ifstream& fin, KS& s) {
 	fin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
+vector<int> find_pipes_by_name(const map<int, PIPE>& pipes, const string& part) {
+	vector<int> found;
+	for (auto& [id, p] : pipes) {
+		if (p.name.find(part) != string::npos)
+			found.push_back(id);
+	}
+	return found;
+}
+
+vector<int> find_pipes_by_status(const map<int, PIPE>& pipes, bool working) {
+	vector<int> found;
+	for (auto& [id, p] : pipes) {
+		if (p.isWorking == working)
+			found.push_back(id);
+	}
+	return found;
+}
+
+vector<int> find_ks_by_name(const map<int, KS>& stations, const string& part) {
+	vector<int> found;
+	for (auto& [id, s] : stations) {
+		if (s.name.find(part) != string::npos)
+			found.push_back(id);
+	}
+	return found;
+}
+
+double idle_percent(const KS& s) {
+	return (s.works - s.worksA) * 100.0 / s.works;
+}
+
+vector<int> find_ks_by_idle(const map<int, KS>& stations, double min_percent) {
+	vector<int> found;
+	for (auto& [id, s] : stations) {
+		if (idle_percent(s) >= min_percent)
+			found.push_back(id);
+	}
+	return found;
+}
+
+void show_found_pipes(const map<int, PIPE>& pipes, const vector<int>& ids) {
+	cout << "Found: " << ids.size() << endl;
+	for (int id : ids)
+		show_pipe(pipes.at(id));
+}
+
+void show_found_ks(const map<int, KS>& stations, const vector<int>& ids) {
+	cout << "Found: " << ids.size() << endl;
+	for (int id : ids) {
+		show_ks(stations.at(id));
+		cout << "Idle works -> " << idle_percent(stations.at(id)) << "%" << endl;
+	}
+}
+
+vector<int> search_pipes(const map<int, PIPE>& pipes) {
+	cout << "Search by: 1 - name, 2 - status -> ";
+	int filter = read_int(1, 2);
+	if (filter == 1) {
+		cout << "Name (or part of it) -> ";
+		string part = read_line();
+		return find_pipes_by_name(pipes, part);
+	}
+	cout << "Status (0 - Not Working, 1 - Working) -> ";
+	bool working = read_int(0, 1);
+	return find_pipes_by_status(pipes, working);
+}
+
+vector<int> search_ks(const map<int, KS>& stations) {
+	cout << "Search by: 1 - name, 2 - idle works percent -> ";
+	int filter = read_int(1, 2);
+	if (filter == 1) {
+		cout << "Name (or part of it) -> ";
+		string part = read_line();
+		return find_ks_by_name(stations, part);
+	}
+	cout << "Minimum idle works percent (0 to 100) -> ";
+	double percent = read_double(0, 100);
+	return find_ks_by_idle(stations, percent);
+}
+
+bool contains(const vector<int>& ids, int id) {
+	for (int x : ids) {
+		if (x == id)
+			return true;
+	}
+	return false;
+}
+
+vector<int> pick_ids(const vector<int>& found) {
+	vector<int> chosen;
+	while (true) {
+		cout << "ID from the found list (0 - finish) -> ";
+		int id = read_int(0, 1000000);
+		if (id == 0)
+			break;
+		if (!contains(found, id))
+			cout << "ID " << id << " is not in the found list" << endl;
+		else if (contains(chosen, id))
+			cout << "ID " << id << " is already chosen" << endl;
+		else
+			chosen.push_back(id);
+	}
+	return chosen;
+}
+
+void batch_edit_pipes(map<int, PIPE>& pipes) {
+	vector<int> found = search_pipes(pipes);
+	show_found_pipes(pipes, found);
+	if (found.empty())
+		return;
+
+	cout << "Apply to: 1 - all found, 2 - chosen IDs -> ";
+	vector<int> targets;
+	if (read_int(1, 2) == 1)
+		targets = found;
+	else
+		targets = pick_ids(found);
+
+	if (targets.empty()) {
+		cout << "Nothing chosen" << endl;
+		return;
+	}
+
+	cout << "Action: 1 - set Working, 2 - set Not Working, 3 - delete -> ";
+	int action = read_int(1, 3);
+	for (int id : targets) {
+		if (action == 3)
+			pipes.erase(id);
+		else
+			pipes[id].isWorking = (action == 1);
+	}
+	cout << "Done for " << targets.size() << " pipe(s)" << endl;
+}
+
 int main()
 {
-	map<int, PIPE> pipes;     // key = pipe id, value = pipe
-	map<int, KS> stations;    // key = KS id, value = KS
+	map<int, PIPE> pipes;
+	map<int, KS> stations;
 	int d;
 
 	do {
@@ -191,10 +331,13 @@ int main()
 		cout << "7. Load from file (later)" << endl;
 		cout << "8. Delete pipe" << endl;
 		cout << "9. Delete KS" << endl;
+		cout << "10. Search pipes" << endl;
+		cout << "11. Search KS" << endl;
+		cout << "12. Batch edit pipes" << endl;
 		cout << "0. Exit" << endl;
 
 		cout << "Choose an option: ";
-		d = read_int(0, 9);
+		d = read_int(0, 12);
 
 		switch (d) {
 
@@ -291,6 +434,35 @@ int main()
 			break;
 		}
 
+		case 10: {
+			if (pipes.empty()) {
+				cout << "No pipes yet" << endl;
+				break;
+			}
+			vector<int> found = search_pipes(pipes);
+			show_found_pipes(pipes, found);
+			break;
+		}
+
+		case 11: {
+			if (stations.empty()) {
+				cout << "No KS yet" << endl;
+				break;
+			}
+			vector<int> found = search_ks(stations);
+			show_found_ks(stations, found);
+			break;
+		}
+
+		case 12: {
+			if (pipes.empty()) {
+				cout << "No pipes yet" << endl;
+				break;
+			}
+			batch_edit_pipes(pipes);
+			break;
+		}
+
 		case 0: {
 			cout << "Exiting..." << endl;
 			break;
@@ -299,7 +471,6 @@ int main()
 
 		if (d != 0) {
 			cout << "\nPress Enter to continue...";
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			cin.get();
 		}
 
