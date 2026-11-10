@@ -1,9 +1,19 @@
-﻿{
+{
  "version": "2.0.0",
  "tasks": [{
   "label": "Build LAB1 (Windows)", "type": "process",
   "command": "C:/msys64/ucrt64/bin/g++.exe",
-  "args": ["-std=c++17", "-g", "-Wall", "-Wextra", "${workspaceFolder}/Shevchenko/LAB1.cpp", "-o", "${workspaceFolder}/Shevchenko/LAB1.exe"],
+  "args": [
+    "-std=c++20",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "${fileDirname}\\LAB1.cpp",
+    "${fileDirname}\\pipe.cpp",
+    "${fileDirname}\\ks.cpp",
+    "-o",
+    "${fileDirname}\\LAB1.exe"
+],
   "options": {"cwd": "${workspaceFolder}/Shevchenko", "env": {"PATH": "C:\\msys64\\ucrt64\\bin;${env:PATH}"}},
   "problemMatcher": ["$gcc"], "group": {"kind": "build", "isDefault": true}
  }]

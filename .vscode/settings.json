@@ -56,7 +56,8 @@
   "terminal.integrated.env.windows": {
     "PATH": "C:\\msys64\\ucrt64\\bin;${env:PATH}"
   },
-  "c-cpp-compile-run.cpp-flags": "-std=c++17 -Wall -Wextra -g",
+  "c-cpp-compile-run.cpp-flags": "-std=c++17 -Wall -Wextra -g pipe.cpp ks.cpp",
+  "c-cpp-compile-run.skip-if-compiled": false,
   "C_Cpp_Runner.cppCompilerPath": "C:/msys64/ucrt64/bin/g++.exe",
   "c-cpp-compile-run.c-compiler": "C:/msys64/ucrt64/bin/gcc.exe",
   "c-cpp-compile-run.cpp-compiler": "C:/msys64/ucrt64/bin/g++.exe",
