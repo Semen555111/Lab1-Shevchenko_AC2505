@@ -145,40 +145,83 @@ void show_ks(const KS&s){
 }
 
 void save_pipe(ofstream& fout, const PIPE& p) {
-	if (p.length > 0)
-		fout << "PIPE" << "\n" << p.name << "\n" << p.length << "\n" << p.diameter << "\n" << p.isWorking << "\n";
+	fout << p.id << "\n" << p.name << "\n" << p.length << " " << p.diameter << " " << p.isWorking << "\n";
 }
 
 void save_ks(ofstream& fout, const KS& s) {
-	if (s.works > 0)
-		fout << "KS" << "\n" << s.name << "\n" << s.works << "\n" << s.worksA << "\n" << s.efficiency << "\n";
+	fout << s.id << "\n" << s.name << "\n" << s.works << " " << s.worksA << " " << s.efficiency << "\n";
 }
 
-void load_pipe(ifstream& fin, PIPE& p) {
-	PIPE tmp = PIPE();
-	getline(fin, tmp.name);
-	fin >> tmp.length >> tmp.diameter >> tmp.isWorking;
-	if (!fin.fail() && tmp.length > 0 && tmp.diameter > 0) {
-		p = tmp;
-		cout << "Pipe was loaded" << "\n";
-	}
-	else
-		cout << "Error: wrong pipe data in file" << "\n";
-	fin.ignore(numeric_limits<streamsize>::max(), '\n');
+bool load_pipe(ifstream& fin, PIPE& p) {
+	fin >> p.id;
+	getline(fin >> ws, p.name);
+	fin >> p.length >> p.diameter >> p.isWorking;
+	return !fin.fail() && p.id > 0 && p.length > 0 && p.diameter > 0;
 }
 
-void load_ks(ifstream& fin, KS& s) {
-	KS tmp = KS();
-	getline(fin, tmp.name);
-	fin >> tmp.works >> tmp.worksA >> tmp.efficiency;
-	if (!fin.fail() && tmp.works > 0 && tmp.worksA >= 0
-		&& tmp.worksA <= tmp.works && tmp.efficiency >= 0 && tmp.efficiency <= 100) {
-		s = tmp;
-		cout << "KS was loaded" << "\n";
+bool load_ks(ifstream& fin, KS& s) {
+	fin >> s.id;
+	getline(fin >> ws, s.name);
+	fin >> s.works >> s.worksA >> s.efficiency;
+	return !fin.fail() && s.id > 0 && s.works > 0 && s.worksA >= 0 && s.worksA <= s.works
+		&& s.efficiency >= 0 && s.efficiency <= 100;
+}
+
+void save_to_file(const map<int, PIPE>& pipes, const map<int, KS>& stations) {
+	cout << "File name -> ";
+	string name = read_line();
+	ofstream fout(name);
+	if (!fout) {
+		cout << "Error opening " << name << " for writing" << endl;
+		return;
 	}
-	else
-		cout << "Error: wrong KS data in file" << "\n";
-	fin.ignore(numeric_limits<streamsize>::max(), '\n');
+	fout << pipes.size() << "\n";
+	for (auto& [id, p] : pipes)
+		save_pipe(fout, p);
+	fout << stations.size() << "\n";
+	for (auto& [id, s] : stations)
+		save_ks(fout, s);
+	cout << "Saved " << pipes.size() << " pipe(s) and " << stations.size() << " KS to " << name << endl;
+}
+
+void load_from_file(map<int, PIPE>& pipes, map<int, KS>& stations) {
+	cout << "File name -> ";
+	string name = read_line();
+	ifstream fin(name);
+	if (!fin) {
+		cout << "Error opening " << name << " for reading" << endl;
+		return;
+	}
+	pipes.clear();
+	stations.clear();
+	next_pipe_id = 1;
+	next_ks_id = 1;
+
+	int count = 0;
+	fin >> count;
+	for (int i = 0; i < count; i++) {
+		PIPE p = PIPE();
+		if (!load_pipe(fin, p)) {
+			cout << "Error: wrong pipe data in " << name << endl;
+			return;
+		}
+		pipes[p.id] = p;
+		if (p.id >= next_pipe_id)
+			next_pipe_id = p.id + 1;
+	}
+
+	fin >> count;
+	for (int i = 0; i < count; i++) {
+		KS s = KS();
+		if (!load_ks(fin, s)) {
+			cout << "Error: wrong KS data in " << name << endl;
+			return;
+		}
+		stations[s.id] = s;
+		if (s.id >= next_ks_id)
+			next_ks_id = s.id + 1;
+	}
+	cout << "Loaded " << pipes.size() << " pipe(s) and " << stations.size() << " KS from " << name << endl;
 }
 
 vector<int> find_pipes_by_name(const map<int, PIPE>& pipes, const string& part) {
@@ -327,8 +370,8 @@ int main()
 		cout << "3. Create KS" << endl;
 		cout << "4. Edit KS" << endl;
 		cout << "5. Show all" << endl;
-		cout << "6. Save to file (later)" << endl;
-		cout << "7. Load from file (later)" << endl;
+		cout << "6. Save to file" << endl;
+		cout << "7. Load from file" << endl;
 		cout << "8. Delete pipe" << endl;
 		cout << "9. Delete KS" << endl;
 		cout << "10. Search pipes" << endl;
@@ -396,9 +439,13 @@ int main()
 			break;
 		}
 
-		case 6:
+		case 6: {
+			save_to_file(pipes, stations);
+			break;
+		}
+
 		case 7: {
-			cout << "Files will be done in step 7" << endl;
+			load_from_file(pipes, stations);
 			break;
 		}
 
